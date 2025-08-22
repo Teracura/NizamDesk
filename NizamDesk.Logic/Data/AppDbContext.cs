@@ -1,11 +1,10 @@
-﻿using Teracura.TestingWebApp.Entities.Companies;
+﻿using Microsoft.EntityFrameworkCore;
+using Teracura.TestingWebApp.Entities.Companies;
 using Teracura.TestingWebApp.Entities.Projects;
 using Teracura.TestingWebApp.Entities.Roles;
 using Teracura.TestingWebApp.Entities.Users;
 
 namespace Teracura.TestingWebApp.Logic.Data;
-
-using Microsoft.EntityFrameworkCore;
 
 public class AppDbContext : DbContext
 {
@@ -17,6 +16,7 @@ public class AppDbContext : DbContext
     public DbSet<Project> Projects { get; set; }
     public DbSet<ProjectMembership> ProjectMemberships { get; set; }
     public DbSet<Ticket> Tickets { get; set; }
+    public DbSet<ExternalLogin> ExternalLogins { get; set; }
     
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
@@ -61,5 +61,28 @@ public class AppDbContext : DbContext
             .WithMany()
             .HasForeignKey(t => t.AssignedUserId)
             .OnDelete(DeleteBehavior.SetNull);
+        
+        modelBuilder.Entity<ExternalLogin>(b =>
+        {
+            b.HasKey(x => x.Id);
+
+            b.HasOne(x => x.User)
+                .WithMany(u => u.ExternalLogins)
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+ 
+            b.HasIndex(x => new { x.Provider, x.ProviderId }).IsUnique();
+
+            b.Property(x => x.Provider).IsRequired();
+            b.Property(x => x.ProviderId).IsRequired();
+        });
+
+        modelBuilder.Entity<User>(b =>
+        {
+            b.HasIndex(u => u.Email).IsUnique();
+            b.Property(u => u.Name).IsRequired();
+            b.Property(u => u.Email).IsRequired();
+            b.Property(u => u.PasswordHash).IsRequired();
+        });
     }
 }
