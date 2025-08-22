@@ -1,63 +1,24 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
-using System.Text.Json;
+using Teracura.TestingWebApp.Interfaces;
+using Teracura.TestingWebApp.Interfaces.Authentication;
+using Teracura.TestingWebApp.Logic;
 using Teracura.TestingWebApp.Logic.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
-
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 🔹 Add Authentication with GitHub
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = "GitHub";
-})
-.AddCookie()
-.AddOAuth("GitHub", options =>
-{
-    options.ClientId = builder.Configuration["Authentication:GitHub:ClientId"];
-    options.ClientSecret = builder.Configuration["Authentication:GitHub:ClientSecret"];
-    options.CallbackPath = new PathString("/signin-github");
+builder.Services.AddGitHubAuth(builder.Configuration);
 
-    options.AuthorizationEndpoint = "https://github.com/login/oauth/authorize";
-    options.TokenEndpoint = "https://github.com/login/oauth/access_token";
-    options.UserInformationEndpoint = "https://api.github.com/user";
-
-    options.SaveTokens = true;
-
-    options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id");
-    options.ClaimActions.MapJsonKey(ClaimTypes.Name, "login");
-    options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email", ClaimValueTypes.String);
-
-    options.Events = new OAuthEvents
-    {
-        OnCreatingTicket = async context =>
-        {
-            var request = new HttpRequestMessage(HttpMethod.Get, context.Options.UserInformationEndpoint);
-            request.Headers.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", context.AccessToken);
-
-            var response = await context.Backchannel.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-
-            using var user = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
-            context.RunClaimActions(user.RootElement);
-        }
-    };
-});
+builder.Services.AddScoped<ExternalLoginManager>();
+builder.Services.AddScoped<ExternalLoginService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -66,12 +27,23 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
-
-// 🔹 Authentication & Authorization must be added
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
+
+app.MapGet("/login", async context =>
+{
+    var redirectUrl = "/";
+    var properties = new AuthenticationProperties { RedirectUri = redirectUrl };
+    await context.ChallengeAsync("GitHub", properties);
+});
+
+app.MapGet("/logout", async context =>
+{
+    await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+    context.Response.Redirect("/");
+});
 
 app.MapControllerRoute(
         name: "default",

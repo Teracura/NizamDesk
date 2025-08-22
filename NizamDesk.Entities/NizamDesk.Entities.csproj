@@ -7,4 +7,8 @@
         <RootNamespace>Teracura.TestingWebApp.Entities</RootNamespace>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Folder Include="DataScheme\" />
+    </ItemGroup>
+
 </Project>
