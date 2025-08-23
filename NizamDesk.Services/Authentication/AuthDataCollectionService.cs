@@ -5,77 +5,88 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Authentication.OAuth;
 using Teracura.TestingWebApp.Entities;
 
 namespace Teracura.TestingWebApp.Interfaces.Authentication;
 
 public static class AuthDataCollectionService
 {
-    public static AuthenticationBuilder AddGitHubAuth(this IServiceCollection services, IConfiguration config)
+    public static AuthenticationBuilder AddOAuthProviders(this IServiceCollection services, IConfiguration config)
     {
-        return services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = "GitHub";
-            })
-            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
-            {
-                options.Cookie.SameSite = SameSiteMode.None;
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-            })
-            .AddOAuth("GitHub", options =>
-            {
-                options.ClientId = config["Authentication:GitHub:ClientId"]!;
-                options.ClientSecret = config["Authentication:GitHub:ClientSecret"]!;
-                options.CallbackPath = new PathString("/signin-github");
+        var providers = config.GetSection("Authentication:Providers")
+                              .Get<List<OAuthClientConfiguration>>() ?? new List<OAuthClientConfiguration>();
 
-                options.AuthorizationEndpoint = "https://github.com/login/oauth/authorize";
-                options.TokenEndpoint = "https://github.com/login/oauth/access_token";
-                options.UserInformationEndpoint = "https://api.github.com/user";
+        var builder = services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        })
+        .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+        {
+            options.Cookie.SameSite = SameSiteMode.None;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        });
 
+        foreach (var provider in providers)
+        {
+            builder.AddOAuth(provider.Name, options =>
+            {
+                options.ClientId = provider.ClientId;
+                options.ClientSecret = provider.ClientSecret;
+                options.CallbackPath = new PathString(provider.CallbackPath);
+                options.AuthorizationEndpoint = provider.AuthorizationEndpoint;
+                options.TokenEndpoint = provider.TokenEndpoint;
+                options.UserInformationEndpoint = provider.UserInformationEndpoint;
                 options.SaveTokens = true;
 
-                options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id");
-                options.ClaimActions.MapJsonKey(ClaimTypes.Name, "login");
-                options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
-                
-                options.Scope.Add("user:email");
+                if (provider.Scopes != null)
+                    foreach (var scope in provider.Scopes)
+                        options.Scope.Add(scope);
 
-                options.Events = new OAuthEvents
+                options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, provider.IdClaimKey);
+                options.ClaimActions.MapJsonKey(ClaimTypes.Name, provider.NameClaimKey);
+                options.ClaimActions.MapJsonKey(ClaimTypes.Email, provider.EmailClaimKey);
+
+                options.Events.OnCreatingTicket = async context =>
                 {
-                    OnCreatingTicket = async context =>
-                    {
-                        // fetch from GitHub
-                        var request = new HttpRequestMessage(HttpMethod.Get, context.Options.UserInformationEndpoint);
-                        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", context.AccessToken);
+                    // Build request
+                    var request = new HttpRequestMessage(HttpMethod.Get, context.Options.UserInformationEndpoint);
+                    request.Headers.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                    request.Headers.Authorization =
+                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", context.AccessToken);
+
+                    if (provider.Name.Equals("GitHub", StringComparison.OrdinalIgnoreCase))
                         request.Headers.UserAgent.ParseAdd("TeracuraApp");
 
-                        var response = await context.Backchannel.SendAsync(request);
-                        response.EnsureSuccessStatusCode();
+                    var response = await context.Backchannel.SendAsync(request);
+                    response.EnsureSuccessStatusCode();
 
-                        using var userDoc = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
-                        var root = userDoc.RootElement;
+                    using var userDoc = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+                    context.RunClaimActions(userDoc.RootElement);
 
-                        var info = new ExternalUserInfo(
-                            Provider: context.Scheme.Name, // "GitHub"
-                            ProviderId: root.GetProperty("id").GetInt64().ToString(),
-                            Name: root.GetProperty("login").GetString(),
-                            Email: root.TryGetProperty("email", out var emailProp) ? emailProp.GetString() : null,
-                            AccessToken: context.AccessToken
-                        );
+                    // Use your login service to map external info to app user
+                    var loginService = context.HttpContext.RequestServices.GetRequiredService<ExternalLoginService>();
 
-                        var loginService = context.HttpContext.RequestServices.GetRequiredService<ExternalLoginService>();
-                        var user = await loginService.GetOrCreateUserAsync(info);
+                    var info = new ExternalUserInfo(
+                        Provider: context.Scheme.Name,
+                        ProviderId: context.Principal!.FindFirst(ClaimTypes.NameIdentifier)!.Value,
+                        Name: context.Principal.FindFirst(ClaimTypes.Name)!.Value,
+                        Email: context.Principal.FindFirst(ClaimTypes.Email)?.Value,
+                        AccessToken: context.AccessToken
+                    );
 
-                        var identity = (ClaimsIdentity)context.Principal?.Identity!;
-                        identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
-                        identity.AddClaim(new Claim(ClaimTypes.Name, user.Name));
-                        if (!string.IsNullOrEmpty(user.Email))
-                            identity.AddClaim(new Claim(ClaimTypes.Email, user.Email));
-                    }
+                    var user = await loginService.GetOrCreateUserAsync(info);
+
+                    // Replace claims identity with your app's user info
+                    var identity = (ClaimsIdentity)context.Principal!.Identity!;
+                    identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
+                    identity.AddClaim(new Claim(ClaimTypes.Name, user.Name));
+                    if (!string.IsNullOrEmpty(user.Email))
+                        identity.AddClaim(new Claim(ClaimTypes.Email, user.Email));
                 };
             });
+        }
+
+        return builder;
     }
 }
