@@ -12,8 +12,5 @@ public class OAuthClientConfiguration
     public string IdClaimKey { get; set; } = "id"; // e.g., "sub" for Google, "id" for GitHub
     public string NameClaimKey { get; set; } = "login"; // e.g., "name" or "login"
     public string EmailClaimKey { get; set; } = "email";
-    
-    // optionals
-    public string? EmailEndpoint { get; set; }
     public string[]? Scopes { get; set; } = null;
 }
