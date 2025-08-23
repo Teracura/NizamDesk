@@ -18,7 +18,7 @@ public class ExternalLoginManager
 
     public async Task<User> GetOrCreateUserAsync(ExternalUserInfo info, string accessToken)
     {
-        // Try to find existing user
+        // 1️⃣ Check if this exact provider + providerId already exists
         var externalLogin = await _db.ExternalLogins
             .Include(el => el.User)
             .FirstOrDefaultAsync(el => el.Provider == info.Provider && el.ProviderId == info.ProviderId);
@@ -26,25 +26,33 @@ public class ExternalLoginManager
         if (externalLogin != null)
             return externalLogin.User;
 
-        // If email is null, fetch from GitHub API
         var email = info.Email;
-        if (string.IsNullOrEmpty(email) && info.Provider == "GitHub")
+
+        if (string.IsNullOrEmpty(email))
         {
-            email = await GetPrimaryGitHubEmailAsync(accessToken);
+            throw new InvalidOperationException("Email is required to create a user.");
         }
 
-        // Create new user
-        var user = new User
+        var existingUser = await _db.Users.FirstOrDefaultAsync(u => u.Email == email);
+        User user;
+
+        if (existingUser != null)
         {
-            Id = Guid.NewGuid(),
-            Name = info.Name!,
-            Email = email!,
-            PasswordHash = "" // external login
-        };
+            // Email exists -> link new external login to this existing user
+            user = existingUser;
+        }
+        else
+        {
+            user = new User
+            {
+                Id = Guid.NewGuid(),
+                Name = info.Name!,
+                Email = email,
+                PasswordHash = "" // external login only
+            };
+            _db.Users.Add(user);
+        }
 
-        _db.Users.Add(user);
-
-        // Add ExternalLogin record
         var login = new ExternalLogin
         {
             Id = Guid.NewGuid(),
@@ -57,30 +65,5 @@ public class ExternalLoginManager
 
         await _db.SaveChangesAsync();
         return user;
-    }
-
-    public async Task<string?> GetPrimaryGitHubEmailAsync(string accessToken)
-    {
-        using var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, "https://api.github.com/user/emails");
-        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
-        request.Headers.UserAgent.ParseAdd("TeracuraApp"); // GitHub requires User-Agent
-
-        var response = await client.SendAsync(request);
-        response.EnsureSuccessStatusCode();
-
-        using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
-        var emails = json.RootElement.EnumerateArray();
-
-        foreach (var emailEntry in emails)
-        {
-            if (emailEntry.GetProperty("primary").GetBoolean() &&
-                emailEntry.GetProperty("verified").GetBoolean())
-            {
-                return emailEntry.GetProperty("email").GetString();
-            }
-        }
-
-        return null; // fallback if no primary verified email
     }
 }

@@ -12,12 +12,26 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddGitHubAuth(builder.Configuration);
 
 builder.Services.AddScoped<ExternalLoginManager>();
 builder.Services.AddScoped<ExternalLoginService>();
 
+builder.Services.AddOAuthProviders(builder.Configuration);
+
 var app = builder.Build();
+
+app.MapGet("/login/{provider}", async (HttpContext context, string provider) =>
+{
+    if (string.IsNullOrEmpty(provider))
+    {
+        context.Response.StatusCode = 400;
+        await context.Response.WriteAsync("Provider not specified");
+        return;
+    }
+
+    var properties = new AuthenticationProperties { RedirectUri = "/" };
+    await context.ChallengeAsync(provider, properties);
+});
 
 if (!app.Environment.IsDevelopment())
 {
@@ -31,13 +45,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
-
-app.MapGet("/login", async context =>
-{
-    var redirectUrl = "/";
-    var properties = new AuthenticationProperties { RedirectUri = redirectUrl };
-    await context.ChallengeAsync("GitHub", properties);
-});
 
 app.MapGet("/logout", async context =>
 {
