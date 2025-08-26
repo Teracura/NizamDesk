@@ -18,7 +18,6 @@ public class ExternalLoginManager
 
     public async Task<User> GetOrCreateUserAsync(ExternalUserInfo info, string accessToken)
     {
-        // 1️⃣ Check if this exact provider + providerId already exists
         var externalLogin = await _db.ExternalLogins
             .Include(el => el.User)
             .FirstOrDefaultAsync(el => el.Provider == info.Provider && el.ProviderId == info.ProviderId);
