@@ -44,6 +44,10 @@ builder.Services.AddScoped<ExternalLoginService>();
 builder.Services.AddAuthorization();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddRazorPages();
+builder.Services.AddServerSideBlazor();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddAntiforgery();
 
 var app = builder.Build();
 
@@ -69,7 +73,7 @@ app.MapGet("/login/{provider}", async (HttpContext context, string provider) =>
         return;
     }
 
-    var properties = new AuthenticationProperties { RedirectUri = "/main" };
+    var properties = new AuthenticationProperties { RedirectUri = "/" };
     await context.ChallengeAsync(provider, properties);
 });
 
