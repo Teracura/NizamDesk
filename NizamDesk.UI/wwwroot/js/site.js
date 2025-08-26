@@ -1,5 +1,11 @@
 ﻿document.addEventListener("DOMContentLoaded", () => {
+    initializeThemeToggle();
+});
+
+function initializeThemeToggle() {
     const themeToggle = document.getElementById("themeToggle");
+    if (!themeToggle) return; // Exit if button not found
+    
     const htmlEl = document.documentElement;
 
     // Load saved theme
@@ -18,10 +24,12 @@
 
     function updateToggleIcon(theme) {
         const icon = themeToggle.querySelector(".theme-toggle-icon");
-        if (theme === "light") {
-            icon.src = "/images/moon-icon.svg"; // moon for switching to dark
-        } else {
-            icon.src = "/images/sun-warm-icon.svg"; // sun for switching to light
+        if (icon) {
+            if (theme === "light") {
+                icon.src = "/images/moon-icon.svg"; // moon for switching to dark
+            } else {
+                icon.src = "/images/sun-warm-icon.svg"; // sun for switching to light
+            }
         }
     }
-});
+}
