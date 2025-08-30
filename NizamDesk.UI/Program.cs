@@ -38,7 +38,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 var authBuilder = builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme);
 authBuilder.AddOAuthProviders(builder.Configuration);
 
-builder.Services.AddScoped<ExternalLoginManager>();
+builder.Services.AddScoped<UserManager>();
 builder.Services.AddScoped<ExternalLoginService>();
 
 builder.Services.AddAuthorization();
@@ -85,5 +85,4 @@ app.MapGet("/logout", async context =>
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
-
 app.Run();

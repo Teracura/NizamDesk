@@ -16,11 +16,6 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="registerUsername" class="form-label">Username</label>
-                    <InputText id="registerUsername" class="form-control" @bind-Value="_registerModel.Username" />
-                </div>
-
-                <div class="mb-3">
                     <label for="registerEmail" class="form-label">Email</label>
                     <InputText id="registerEmail" type="email" class="form-control" @bind-Value="_registerModel.Email" />
                 </div>
@@ -62,7 +57,6 @@
     public class RegisterModel
     {
         public string? Name { get; set; }
-        public string? Username { get; set; }
         public string? Email { get; set; }
         public string? Password { get; set; }
         public string? RepeatPassword { get; set; }

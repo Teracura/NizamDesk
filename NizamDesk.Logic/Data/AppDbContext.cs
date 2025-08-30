@@ -82,7 +82,6 @@ public class AppDbContext : DbContext
             b.HasIndex(u => u.Email).IsUnique();
             b.Property(u => u.Name).IsRequired();
             b.Property(u => u.Email).IsRequired();
-            b.Property(u => u.PasswordHash).IsRequired();
         });
     }
 }

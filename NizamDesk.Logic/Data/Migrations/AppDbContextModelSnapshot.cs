@@ -28,8 +28,11 @@ namespace Teracura.TestingWebApp.Logic.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("EntryPassword")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<byte[]>("EntryPassword")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<byte[]>("EntrySalt")
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -37,7 +40,7 @@ namespace Teracura.TestingWebApp.Logic.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Companies");
+                    b.ToTable("Companies", (string)null);
                 });
 
             modelBuilder.Entity("Teracura.TestingWebApp.Entities.Companies.CompanyMembership", b =>
@@ -50,7 +53,7 @@ namespace Teracura.TestingWebApp.Logic.Data.Migrations
 
                     b.HasKey("UserId", "CompanyId");
 
-                    b.ToTable("CompanyMemberships");
+                    b.ToTable("CompanyMemberships", (string)null);
                 });
 
             modelBuilder.Entity("Teracura.TestingWebApp.Entities.Projects.Project", b =>
@@ -70,7 +73,7 @@ namespace Teracura.TestingWebApp.Logic.Data.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("Projects");
+                    b.ToTable("Projects", (string)null);
                 });
 
             modelBuilder.Entity("Teracura.TestingWebApp.Entities.Projects.ProjectMembership", b =>
@@ -86,7 +89,7 @@ namespace Teracura.TestingWebApp.Logic.Data.Migrations
 
                     b.HasKey("UserId", "ProjectId");
 
-                    b.ToTable("ProjectMemberships");
+                    b.ToTable("ProjectMemberships", (string)null);
                 });
 
             modelBuilder.Entity("Teracura.TestingWebApp.Entities.Projects.Ticket", b =>
@@ -122,7 +125,7 @@ namespace Teracura.TestingWebApp.Logic.Data.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("Tickets");
+                    b.ToTable("Tickets", (string)null);
                 });
 
             modelBuilder.Entity("Teracura.TestingWebApp.Entities.Roles.Role", b =>
@@ -146,7 +149,7 @@ namespace Teracura.TestingWebApp.Logic.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("Teracura.TestingWebApp.Entities.Users.ExternalLogin", b =>
@@ -173,7 +176,7 @@ namespace Teracura.TestingWebApp.Logic.Data.Migrations
                     b.HasIndex("Provider", "ProviderId")
                         .IsUnique();
 
-                    b.ToTable("ExternalLogins");
+                    b.ToTable("ExternalLogins", (string)null);
                 });
 
             modelBuilder.Entity("Teracura.TestingWebApp.Entities.Users.User", b =>
@@ -190,16 +193,18 @@ namespace Teracura.TestingWebApp.Logic.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<byte[]>("PasswordHash")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<byte[]>("Salt")
+                        .HasColumnType("varbinary(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("Teracura.TestingWebApp.Entities.Users.UserRole", b =>
@@ -212,7 +217,7 @@ namespace Teracura.TestingWebApp.Logic.Data.Migrations
 
                     b.HasKey("UserId", "RoleId");
 
-                    b.ToTable("UserRoles");
+                    b.ToTable("UserRoles", (string)null);
                 });
 
             modelBuilder.Entity("Teracura.TestingWebApp.Entities.Projects.Project", b =>

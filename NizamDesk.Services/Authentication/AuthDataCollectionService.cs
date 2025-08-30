@@ -63,7 +63,7 @@ public static class AuthDataCollectionService
                         AccessToken: context.AccessToken
                     );
 
-                    var user = await userService.GetOrCreateUserAsync(externalInfo, context.AccessToken!);
+                    var user = await userService.ConnectExternalAccount(externalInfo);
 
                     var identity = (ClaimsIdentity)context.Principal!.Identity!;
                     identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));

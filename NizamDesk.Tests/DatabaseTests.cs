@@ -24,6 +24,7 @@ public class DatabaseTests
     [Fact]
     public void Should_Create_And_Delete_Database_Data()
     {
+        _dbContext.Database.EnsureDeleted();
         _dbContext.Database.EnsureCreated();
 
         _dbContext.Companies.Add(new Company
@@ -73,7 +74,7 @@ public class DatabaseTests
         {
             Email = "thisisatestemail@outlook.com",
             Name = "Test User",
-            PasswordHash = "password",
+            PasswordHash = null,
             Id = Guid.NewGuid()
         };
 
@@ -91,7 +92,7 @@ public class DatabaseTests
         {
             Id = Guid.NewGuid(),
             Name = "Test Company",
-            EntryPassword = "1234"
+            EntryPassword = null
         };
 
         _dbContext.Companies.Add(company);
@@ -203,9 +204,9 @@ public class DatabaseTests
     {
         _dbContext.Database.EnsureCreated();
 
-        var user1 = new User { Id = Guid.NewGuid(), Name = "User1", Email = "user1@test.com", PasswordHash = "pass1" };
-        var user2 = new User { Id = Guid.NewGuid(), Name = "User2", Email = "user2@test.com", PasswordHash = "pass2" };
-        var user3 = new User { Id = Guid.NewGuid(), Name = "User3", Email = "user3@test.com", PasswordHash = "pass3" };
+        var user1 = new User { Id = Guid.NewGuid(), Name = "User1", Email = "user1@test.com", PasswordHash = null };
+        var user2 = new User { Id = Guid.NewGuid(), Name = "User2", Email = "user2@test.com", PasswordHash = null };
+        var user3 = new User { Id = Guid.NewGuid(), Name = "User3", Email = "user3@test.com", PasswordHash = null };
 
         _dbContext.Users.AddRange(user1, user2, user3);
 
@@ -255,7 +256,7 @@ public class DatabaseTests
     {
         _dbContext.Database.EnsureCreated();
 
-        var user = new User { Id = Guid.NewGuid(), Name = "User", Email = "user@test.com", PasswordHash = "pass" };
+        var user = new User { Id = Guid.NewGuid(), Name = "User", Email = "user@test.com", PasswordHash = null };
         var company = new Company { Id = Guid.NewGuid(), Name = "Test Company" };
         var project = new Project { Id = Guid.NewGuid(), Name = "Test Project", CompanyId = company.Id };
 
@@ -276,7 +277,7 @@ public class DatabaseTests
     {
         _dbContext.Database.EnsureCreated();
 
-        var user = new User { Id = Guid.NewGuid(), Name = "User", Email = "user@test.com", PasswordHash = "pass" };
+        var user = new User { Id = Guid.NewGuid(), Name = "User", Email = "user@test.com", PasswordHash = null };
         var company = new Company { Id = Guid.NewGuid(), Name = "Test Company" };
         var project = new Project { Id = Guid.NewGuid(), Name = "Test Project", CompanyId = company.Id };
 
@@ -304,9 +305,9 @@ public class DatabaseTests
         _dbContext.Database.EnsureCreated();
 
         var creator = new User
-            { Id = Guid.NewGuid(), Name = "Creator", Email = "creator@test.com", PasswordHash = "pass" };
+            { Id = Guid.NewGuid(), Name = "Creator", Email = "creator@test.com", PasswordHash = null };
         var assignee = new User
-            { Id = Guid.NewGuid(), Name = "Assignee", Email = "assignee@test.com", PasswordHash = "pass" };
+            { Id = Guid.NewGuid(), Name = "Assignee", Email = "assignee@test.com", PasswordHash = null };
         var company = new Company { Id = Guid.NewGuid(), Name = "Test Company" };
         var project = new Project { Id = Guid.NewGuid(), Name = "Test Project", CompanyId = company.Id };
 
@@ -339,7 +340,7 @@ public class DatabaseTests
     {
         _dbContext.Database.EnsureCreated();
 
-        var user = new User { Id = Guid.NewGuid(), Name = "User", Email = "user@test.com", PasswordHash = "pass" };
+        var user = new User { Id = Guid.NewGuid(), Name = "User", Email = "user@test.com", PasswordHash = null };
         var company = new Company { Id = Guid.NewGuid(), Name = "Test Company" };
         var project = new Project { Id = Guid.NewGuid(), Name = "Test Project", CompanyId = company.Id };
 
@@ -374,7 +375,7 @@ public class DatabaseTests
     {
         _dbContext.Database.EnsureCreated();
 
-        var user = new User { Id = Guid.NewGuid(), Name = "User", Email = "user@test.com", PasswordHash = "pass" };
+        var user = new User { Id = Guid.NewGuid(), Name = "User", Email = "user@test.com", PasswordHash = null };
         var company = new Company { Id = Guid.NewGuid(), Name = "Test Company" };
         var project = new Project { Id = Guid.NewGuid(), Name = "Test Project", CompanyId = company.Id };
 
