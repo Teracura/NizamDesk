@@ -54,7 +54,7 @@ public static class AuthDataCollectionService
                     if (string.IsNullOrEmpty(email))
                         throw new InvalidOperationException("Email is required to create a user.");
 
-                    var userService = context.HttpContext.RequestServices.GetRequiredService<ExternalLoginService>();
+                    var userService = context.HttpContext.RequestServices.GetRequiredService<UserServices>();
                     var externalInfo = new ExternalUserInfo(
                         Provider: context.Scheme.Name,
                         ProviderId: context.Principal!.FindFirstValue(ClaimTypes.NameIdentifier)!,

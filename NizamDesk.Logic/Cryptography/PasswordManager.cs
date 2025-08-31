@@ -2,9 +2,9 @@
 
 namespace Teracura.TestingWebApp.Logic.Cryptography;
 
-public static class PasswordManager
+public class PasswordManager
 {
-    public static (byte[] Hash, byte[] Salt) HashPassword(string password)
+    public (byte[] Hash, byte[] Salt) HashPassword(string password)
     {
         var salt = RandomNumberGenerator.GetBytes(16);
         var pepper = (char)RandomNumberGenerator.GetInt32(fromInclusive: 100, toExclusive: 128);
@@ -14,7 +14,7 @@ public static class PasswordManager
         return (hash, salt);
     }
 
-    public static bool VerifyPassword(byte[]? hash, byte[]? salt, string password)
+    public bool VerifyPassword(byte[]? hash, byte[]? salt, string password)
     {
         if (hash == null || salt == null)
         {

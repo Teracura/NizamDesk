@@ -5,6 +5,7 @@ using Teracura.TestingWebApp.Interfaces;
 using Teracura.TestingWebApp.Interfaces.Authentication;
 using Teracura.TestingWebApp.Logic.Data;
 using Teracura.TestingWebApp.Logic;
+using Teracura.TestingWebApp.Logic.Cryptography;
 using App = NizamDesk.UI.Components.App;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,20 +35,23 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
             return Task.CompletedTask;
         };
     });
+builder.Services.AddHttpClient<UserServices>(client => { client.BaseAddress = new Uri("https://localhost:7209"); });
 
 var authBuilder = builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme);
 authBuilder.AddOAuthProviders(builder.Configuration);
 
+builder.Services.AddScoped<PasswordManager>();
+builder.Services.AddScoped<PasswordServices>();
 builder.Services.AddScoped<UserManager>();
-builder.Services.AddScoped<ExternalLoginService>();
+builder.Services.AddScoped<UserServices>();
 
 builder.Services.AddAuthorization();
-builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddAntiforgery();
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
@@ -77,11 +81,12 @@ app.MapGet("/login/{provider}", async (HttpContext context, string provider) =>
     await context.ChallengeAsync(provider, properties);
 });
 
-app.MapGet("/logout", async context =>
+app.MapGet("/logout", async (HttpContext ctx) =>
 {
-    await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-    context.Response.Redirect("/");
+    await ctx.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+    return Results.Redirect("/");
 });
+
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

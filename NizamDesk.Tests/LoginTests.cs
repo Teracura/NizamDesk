@@ -11,6 +11,8 @@ namespace Teracura.TestingWebApp.Tests;
 public class LoginTests
 {
     private readonly UserManager _userManager = new(GetDbContext());
+    private readonly PasswordManager _passwordManager = new();
+
     private static AppDbContext GetDbContext()
     {
         var config = new ConfigurationBuilder()
@@ -33,7 +35,7 @@ public class LoginTests
     {
         await using var context = GetDbContext();
 
-        var hashSalt = PasswordManager.HashPassword("PlainTextPassword");
+        var hashSalt = _passwordManager.HashPassword("PlainTextPassword");
         var user = new User
         {
             Name = "testuser",
@@ -58,7 +60,7 @@ public class LoginTests
         using var context = GetDbContext();
 
         var savedUser = context.Users.First(u => u.Email == "aaaa@test.com");
-        var isVerified = PasswordManager.VerifyPassword(savedUser.PasswordHash, savedUser.Salt, "PlainTextPassword");
+        var isVerified = _passwordManager.VerifyPassword(savedUser.PasswordHash, savedUser.Salt, "PlainTextPassword");
         isVerified.ShouldBeTrue();
     }
 
@@ -66,7 +68,7 @@ public class LoginTests
     public async Task Should_Sign_Up_User()
     {
         var testPasswordInput = "thisisATestPasswoRD1234567890";
-        var hashSalt = PasswordManager.HashPassword(testPasswordInput);
+        var hashSalt = _passwordManager.HashPassword(testPasswordInput);
         var testUser = new User
         {
             Name = "Teracura",

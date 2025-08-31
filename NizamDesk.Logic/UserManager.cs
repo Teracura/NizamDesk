@@ -12,7 +12,7 @@ public class UserManager(AppDbContext db)
     {
         if (await ExternalLoginExistsAsync(info.Provider, info.ProviderId))
         {
-            var matchingLogin = await db.ExternalLogins.Include(u => u.User!)
+            var matchingLogin = await db.ExternalLogins.Include(u => u.User)
                 .FirstOrDefaultAsync(l => l.Provider == info.Provider && l.ProviderId == info.ProviderId);
             return matchingLogin!.User;
         }
@@ -54,12 +54,25 @@ public class UserManager(AppDbContext db)
 
     public async Task RegisterUserAsync(User user)
     {
-        if (await EmailExistsAsync(user)) return;
-        await db.Users.AddAsync(user);
-        await db.SaveChangesAsync();
-    }
+        var currentUser = await GetUserAsync(user.Email);
 
-    public async Task<bool> EmailExistsAsync(User user)
+        if (currentUser is null)
+        {
+            user.Id = Guid.NewGuid();
+            await db.Users.AddAsync(user);
+            await db.SaveChangesAsync();
+            return;
+        }
+        
+        if (user.PasswordHash is not null)
+        {
+            currentUser.PasswordHash = user.PasswordHash;
+            currentUser.Salt = user.Salt;
+            await db.SaveChangesAsync();
+        }
+    }
+    
+    private async Task<bool> EmailExistsAsync(User user)
     {
         return await db.Users.AnyAsync(u => u.Email == user.Email);
     }
@@ -73,6 +86,11 @@ public class UserManager(AppDbContext db)
     {
         return await db.ExternalLogins
             .AnyAsync(l => l.Provider == login.Provider && l.ProviderId == login.ProviderId);
+    }
+
+    public async Task<bool> InternalLoginExistsAsync(string email)
+    {
+        return await db.Users.AnyAsync(u => u.Email == email && u.PasswordHash != null);
     }
 
     public async Task<List<ExternalLogin>> GetExternalLoginsAsync(User user)

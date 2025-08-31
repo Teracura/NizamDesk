@@ -1,4 +1,10 @@
 ﻿@page "/register"
+@using System.Text.RegularExpressions
+@using Teracura.TestingWebApp.Interfaces
+@inject UserServices UserService
+@inject PasswordServices PasswordService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
 
 <div class="d-flex justify-content-center align-items-center vh-100">
     <div class="card shadow p-4" style="max-width: 500px; width: 100%;">
@@ -6,39 +12,50 @@
 
             <h3 class="text-center mb-4">Register</h3>
 
-            <EditForm Model="@_registerModel" OnValidSubmit="HandleRegister">
-                <DataAnnotationsValidator />
-                <ValidationSummary />
+            <EditForm Model="@_registerModel" OnValidSubmit="RegisterUser">
+                <DataAnnotationsValidator/>
+                <ValidationSummary/>
 
                 <div class="mb-3">
                     <label for="registerName" class="form-label">Name</label>
-                    <InputText id="registerName" class="form-control" @bind-Value="_registerModel.Name" />
+                    <InputText id="registerName" class="form-control" @bind-Value="_registerModel.Name"/>
                 </div>
 
                 <div class="mb-3">
                     <label for="registerEmail" class="form-label">Email</label>
-                    <InputText id="registerEmail" type="email" class="form-control" @bind-Value="_registerModel.Email" />
+                    <InputText id="registerEmail" type="email" class="form-control" @bind-Value="_registerModel.Email"/>
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-3 position-relative">
                     <label for="registerPassword" class="form-label">Password</label>
-                    <InputText id="registerPassword" type="password" class="form-control" @bind-Value="_registerModel.Password" />
+                    <InputText id="registerPassword" type="@(_showPassword ? "text" : "password")" class="form-control"
+                               @bind-Value="_registerModel.Password"/>
                 </div>
 
                 <div class="mb-3">
                     <label for="registerRepeatPassword" class="form-label">Repeat Password</label>
-                    <InputText id="registerRepeatPassword" type="password" class="form-control" @bind-Value="_registerModel.RepeatPassword" />
+                    <InputText id="registerRepeatPassword" type="@(_showPassword ? "text" : "password")"
+                               class="form-control"
+                               @bind-Value="_registerModel.RepeatPassword"/>
                 </div>
 
                 <div class="form-check d-flex justify-content-center mb-3">
-                    <InputCheckbox id="registerCheck" class="form-check-input me-2" @bind-Value="_registerModel.AcceptTerms" />
+                    <InputCheckbox id="registerCheck" class="form-check-input me-2"
+                                   @bind-Value="_registerModel.AcceptTerms"/>
                     <label for="registerCheck" class="form-check-label">I agree to the terms</label>
                 </div>
+
+                @if (!string.IsNullOrEmpty(_errorMessage))
+                {
+                    <div class="alert alert-danger text-center">@_errorMessage</div>
+                }
 
                 <button type="submit" class="btn btn-primary w-100 mb-3">Register</button>
 
                 <div class="text-center">
-                    <p>Already a member? <NavLink class="text-primary" href="/login">Login</NavLink></p>
+                    <p>Already a member?
+                        <NavLink class="text-primary" href="/login">Login</NavLink>
+                    </p>
                 </div>
             </EditForm>
 
@@ -46,20 +63,83 @@
     </div>
 </div>
 
+
 @code {
     private RegisterModel _registerModel { get; set; } = new();
+    private bool _showPassword;
+    private string? _errorMessage;
 
-    private void HandleRegister()
+    private async Task RegisterUser()
     {
-        Console.WriteLine($"Register user {_registerModel.Email}");
+        // check missing details
+        var missing = GetMissingDetails(_registerModel);
+        if (missing.Any())
+        {
+            _errorMessage = $"{string.Join(", ", missing)} {(missing.Count == 1 ? "is" : "are")} missing.";
+            return;
+        }
+
+        //check strong password
+        if (!PasswordService.IsStrongPassword(_registerModel.Password!))
+        {
+            _errorMessage = "Password must be at least 8 characters long and include upper, lower, number, and special character.";
+            return;
+        }
+
+        // check password match
+        if (_registerModel.Password != _registerModel.RepeatPassword)
+        {
+            _errorMessage = "Passwords do not match.";
+            return;
+        }
+
+        // cleaning
+        var email = _registerModel.Email!.Trim().ToLowerInvariant();
+        var exists = await UserService.EmailExistsAsync(email);
+        var user = UserService.CreateUser(_registerModel.Name!.Trim(), email, _registerModel.Password!);
+
+        // check if email is valid
+        if (!ValidateEmail(email))
+        {
+            _errorMessage = "Email is invalid";
+            return;
+        }
+
+        // if user doesn't exist or exists only with an external provider
+        if (!exists || await UserService.EmailExistsExternalOnlyAsync(user))
+        {
+            await UserService.RegisterUserAsync(user);
+            NavigationManager.NavigateTo("/login", forceLoad: true);
+            return;
+        }
+
+        _errorMessage = "User with this email already exists.";
     }
 
-    public class RegisterModel
+    private List<string> GetMissingDetails(RegisterModel model)
     {
-        public string? Name { get; set; }
-        public string? Email { get; set; }
-        public string? Password { get; set; }
-        public string? RepeatPassword { get; set; }
-        public bool AcceptTerms { get; set; }
+        var missing = new List<string>();
+
+        if (string.IsNullOrWhiteSpace(model.Name))
+            missing.Add("Name");
+
+        if (string.IsNullOrWhiteSpace(model.Email))
+            missing.Add("Email");
+
+        if (string.IsNullOrWhiteSpace(model.Password))
+            missing.Add("Password");
+
+        if (string.IsNullOrWhiteSpace(model.RepeatPassword))
+            missing.Add("Repeat Password");
+
+        return missing;
     }
+
+    private bool ValidateEmail(string email)
+    {
+        var regex = new Regex(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
+        return regex.IsMatch(email);
+    }
+
 }
+

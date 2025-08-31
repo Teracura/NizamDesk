@@ -1,6 +1,9 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
+@using Teracura.TestingWebApp.Interfaces
 @rendermode InteractiveServer
 @inject IJSRuntime JS
+@inject UserServices UserService
+@inject NavigationManager Navigation
 
 <nav class="navbar navbar-expand-lg shadow-sm custom-navbar fixed-top">
     <div class="container-fluid">
@@ -18,13 +21,15 @@
                 <Authorized>
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="btn btn-link nav-link" href="/Logout">Sign out</a>
+                            <a class="btn btn-link nav-link" href="/logout">Sign out</a>
                         </li>
-                        <button class="btn btn-link nav-link" @onclick="ToggleTheme">
-                            <img src="images/@(_isLightTheme ? "moon-icon.svg" : "sun-warm-icon.svg")"
-                                 alt="Theme Icon"
-                                 height="24"/>
-                        </button>
+                        <li class="nav-item">
+                            <button class="btn btn-link nav-link" @onclick="ToggleTheme">
+                                <img src="images/@(_isLightTheme ? "moon-icon.svg" : "sun-warm-icon.svg")"
+                                     alt="Theme Icon"
+                                     height="24"/>
+                            </button>
+                        </li>
                     </ul>
                 </Authorized>
                 <NotAuthorized>
@@ -74,5 +79,4 @@
 
         StateHasChanged();
     }
-
 }
