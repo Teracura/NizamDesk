@@ -13,9 +13,9 @@ public partial class PasswordServices(PasswordManager passwordManager)
         return passwordManager.HashPassword(password);
     }
 
-    public void VerifyPassword(string password, Byte[] hash, Byte[] salt)
+    public bool VerifyPassword(string password, byte[] hash, byte[] salt)
     {
-        passwordManager.VerifyPassword(hash, salt, password);
+        return passwordManager.VerifyPassword(hash, salt, password);
     }
 
     public bool IsStrongPassword(string password)

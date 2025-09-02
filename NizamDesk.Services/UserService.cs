@@ -7,7 +7,7 @@ using Teracura.TestingWebApp.Logic;
 
 namespace Teracura.TestingWebApp.Interfaces;
 
-public class UserServices(UserManager userManager, IHttpContextAccessor httpContextAccessor, PasswordServices passwordServices)
+public class UserService(UserManager userManager, IHttpContextAccessor httpContextAccessor, PasswordServices passwordServices)
 {
     public async Task<User> ConnectExternalAccount(ExternalUserInfo info)
     {
@@ -72,5 +72,15 @@ public class UserServices(UserManager userManager, IHttpContextAccessor httpCont
     public async Task<bool> EmailExistsExternalOnlyAsync(User user)
     {
         return await userManager.EmailExistsAsync(user.Email) || !await userManager.InternalLoginExistsAsync(user.Email);
+    }
+    
+    public async Task<User?> GetUserAsync(string email)
+    {
+        return await userManager.GetUserAsync(email);
+    }
+
+    public async Task<User?> GetUserAsyncIfNotInternal(string email)
+    {
+        return await userManager.GetUserAsyncIfNotInternal(email);
     }
 }

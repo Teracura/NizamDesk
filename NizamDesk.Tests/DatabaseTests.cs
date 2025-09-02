@@ -8,7 +8,7 @@ using Teracura.TestingWebApp.Logic.Data;
 
 namespace Teracura.TestingWebApp.Tests;
 
-public class DatabaseTests
+public class DatabaseTests : TestBase
 {
     private readonly AppDbContext _dbContext;
 

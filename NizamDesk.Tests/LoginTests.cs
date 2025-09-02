@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Configuration;
 using Shouldly;
 using Teracura.TestingWebApp.Entities.Users;
@@ -8,10 +9,17 @@ using Teracura.TestingWebApp.Logic.Data;
 
 namespace Teracura.TestingWebApp.Tests;
 
-public class LoginTests
+
+public class LoginTests : TestBase
 {
-    private readonly UserManager _userManager = new(GetDbContext());
-    private readonly PasswordManager _passwordManager = new();
+    private readonly UserManager _userManager;
+    private readonly PasswordManager _passwordManager;
+
+    public LoginTests()
+    {
+        _userManager = GetService<UserManager>();
+        _passwordManager = GetService<PasswordManager>();
+    }
 
     private static AppDbContext GetDbContext()
     {
@@ -79,7 +87,7 @@ public class LoginTests
         };
         await _userManager.RegisterUserAsync(testUser);
         var user = await _userManager.GetUserAsync(testUser.Email);
-        user.PasswordHash.ShouldBe(testUser.PasswordHash);
-        user.Salt.ShouldBe(testUser.Salt);
+        user!.PasswordHash!.ToString().ShouldNotBe(testPasswordInput);
+        _passwordManager.VerifyPassword(user!.PasswordHash, user.Salt, testPasswordInput).ShouldBeTrue();
     }
 }

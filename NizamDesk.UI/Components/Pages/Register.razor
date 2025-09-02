@@ -1,9 +1,9 @@
 ﻿@page "/register"
-@using System.Text.RegularExpressions
 @using Teracura.TestingWebApp.Interfaces
-@inject UserServices UserService
+@inject UserService UserService
 @inject PasswordServices PasswordService
 @inject NavigationManager NavigationManager
+@inject EmailService EmailService
 @rendermode InteractiveServer
 
 <div class="d-flex justify-content-center align-items-center vh-100">
@@ -86,6 +86,15 @@
             return;
         }
 
+        var email = _registerModel.Email!.Trim().ToLowerInvariant();
+
+        // check if email is valid
+        if (!EmailService.IsValidEmail(email))
+        {
+            _errorMessage = "Email is invalid";
+            return;
+        }
+
         // check password match
         if (_registerModel.Password != _registerModel.RepeatPassword)
         {
@@ -94,16 +103,8 @@
         }
 
         // cleaning
-        var email = _registerModel.Email!.Trim().ToLowerInvariant();
         var exists = await UserService.EmailExistsAsync(email);
         var user = UserService.CreateUser(_registerModel.Name!.Trim(), email, _registerModel.Password!);
-
-        // check if email is valid
-        if (!ValidateEmail(email))
-        {
-            _errorMessage = "Email is invalid";
-            return;
-        }
 
         // if user doesn't exist or exists only with an external provider
         if (!exists || await UserService.EmailExistsExternalOnlyAsync(user))
@@ -133,12 +134,6 @@
             missing.Add("Repeat Password");
 
         return missing;
-    }
-
-    private bool ValidateEmail(string email)
-    {
-        var regex = new Regex(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
-        return regex.IsMatch(email);
     }
 
 }

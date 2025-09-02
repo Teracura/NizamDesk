@@ -5,11 +5,11 @@ using Teracura.TestingWebApp.Logic.Data;
 
 namespace Teracura.TestingWebApp.Logic;
 
-public class UserManager(AppDbContext db)
+public class UserManager(IDbContextFactory<AppDbContext> dbFactory)
 {
-    // gets or creates a user based on the external login info
     public async Task<User> LinkExternalUserAsync(ExternalUserInfo info)
     {
+        var db = await dbFactory.CreateDbContextAsync();
         if (await ExternalLoginExistsAsync(info.Provider, info.ProviderId))
         {
             var matchingLogin = await db.ExternalLogins.Include(u => u.User)
@@ -54,6 +54,7 @@ public class UserManager(AppDbContext db)
 
     public async Task RegisterUserAsync(User user)
     {
+        var db = await dbFactory.CreateDbContextAsync();
         var currentUser = await GetUserAsync(user.Email);
 
         if (currentUser is null)
@@ -63,7 +64,7 @@ public class UserManager(AppDbContext db)
             await db.SaveChangesAsync();
             return;
         }
-        
+
         if (user.PasswordHash is not null)
         {
             currentUser.PasswordHash = user.PasswordHash;
@@ -71,30 +72,35 @@ public class UserManager(AppDbContext db)
             await db.SaveChangesAsync();
         }
     }
-    
+
     private async Task<bool> EmailExistsAsync(User user)
     {
+        var db = await dbFactory.CreateDbContextAsync();
         return await db.Users.AnyAsync(u => u.Email == user.Email);
     }
 
     public async Task<bool> EmailExistsAsync(string email)
     {
+        var db = await dbFactory.CreateDbContextAsync();
         return await db.Users.AnyAsync(u => u.Email == email);
     }
 
     public async Task<bool> ExternalLoginExistsAsync(ExternalLogin login)
     {
+        var db = await dbFactory.CreateDbContextAsync();
         return await db.ExternalLogins
             .AnyAsync(l => l.Provider == login.Provider && l.ProviderId == login.ProviderId);
     }
 
     public async Task<bool> InternalLoginExistsAsync(string email)
     {
+        var db = await dbFactory.CreateDbContextAsync();
         return await db.Users.AnyAsync(u => u.Email == email && u.PasswordHash != null);
     }
 
     public async Task<List<ExternalLogin>> GetExternalLoginsAsync(User user)
     {
+        var db = await dbFactory.CreateDbContextAsync();
         return await db.ExternalLogins
             .Where(l => l.UserId == user.Id)
             .ToListAsync();
@@ -102,22 +108,32 @@ public class UserManager(AppDbContext db)
 
     public async Task<bool> ExternalLoginExistsAsync(string provider, string providerId)
     {
+        var db = await dbFactory.CreateDbContextAsync();
         return await db.ExternalLogins.Include(u => u.User)
             .AnyAsync(l => l.Provider == provider && l.ProviderId == providerId);
     }
 
     public void DeleteExternalLogin(ExternalLogin login)
     {
+        var db = dbFactory.CreateDbContext();
         db.ExternalLogins.Remove(login);
     }
 
     public void DeleteUser(User user)
     {
+        var db = dbFactory.CreateDbContext();
         db.Users.Remove(user);
     }
 
     public async Task<User?> GetUserAsync(string email)
     {
-        return await db.Users.FirstOrDefaultAsync(u => u.Email == email);
+        var db = await dbFactory.CreateDbContextAsync();
+        return await db.Users.SingleOrDefaultAsync(u => u.Email == email);
+    }
+
+    public async Task<User?> GetUserAsyncIfNotInternal(string email)
+    {
+        var db = await dbFactory.CreateDbContextAsync();
+        return await db.Users.FirstOrDefaultAsync(u => u.Email == email && u.PasswordHash != null);
     }
 }

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using NizamDesk.UI;
 using Teracura.TestingWebApp.Interfaces;
 using Teracura.TestingWebApp.Interfaces.Authentication;
 using Teracura.TestingWebApp.Logic.Data;
@@ -13,7 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddDbContext<AppDbContext>(options =>
+builder.Services.AddDbContextFactory<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -35,15 +36,9 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
             return Task.CompletedTask;
         };
     });
-builder.Services.AddHttpClient<UserServices>(client => { client.BaseAddress = new Uri("https://localhost:7209"); });
 
 var authBuilder = builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme);
-authBuilder.AddOAuthProviders(builder.Configuration);
-
-builder.Services.AddScoped<PasswordManager>();
-builder.Services.AddScoped<PasswordServices>();
-builder.Services.AddScoped<UserManager>();
-builder.Services.AddScoped<UserServices>();
+LoginService.ConfigureExternalProviders(authBuilder,builder.Configuration);
 
 builder.Services.AddAuthorization();
 builder.Services.AddCascadingAuthenticationState();
@@ -51,7 +46,19 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddAntiforgery();
-builder.Services.AddHttpClient();
+builder.Services.AddHttpClient<UserService>(client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7209");
+});
+
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddScoped<PasswordManager>();
+builder.Services.AddScoped<PasswordServices>();
+builder.Services.AddScoped<UserManager>();
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<LoginService>();
+builder.Services.AddScoped<EmailService>();
 
 var app = builder.Build();
 
@@ -68,7 +75,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseAntiforgery();
 
-app.MapGet("/login/{provider}", async (HttpContext context, string provider) =>
+app.MapGet("/login/{provider}", async (HttpContext context, string provider, LoginService loginService) =>
 {
     if (string.IsNullOrEmpty(provider))
     {
@@ -77,9 +84,40 @@ app.MapGet("/login/{provider}", async (HttpContext context, string provider) =>
         return;
     }
 
+    if (provider.ToLowerInvariant() == "internal")
+    {
+        // Get login info from query parameters
+        var email = context.Request.Query["email"].ToString();
+        var password = context.Request.Query["password"].ToString();
+        if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+        {
+            context.Response.StatusCode = 400;
+            await context.Response.WriteAsync("Email or password missing");
+            return;
+        }
+
+        var loginModel = new LoginModel
+        {
+            Email = email,
+            Password = password
+        };
+
+        var principal = await loginService.LoginInternalAsyncHttp(loginModel, context);
+        if (principal == null)
+        {
+            context.Response.StatusCode = 401;
+            await context.Response.WriteAsync("Invalid email or password");
+            return;
+        }
+
+        context.Response.Redirect("/"); // login successful
+        return;
+    }
+    // OAuth external provider
     var properties = new AuthenticationProperties { RedirectUri = "/" };
     await context.ChallengeAsync(provider, properties);
 });
+
 
 app.MapGet("/logout", async (HttpContext ctx) =>
 {
@@ -87,6 +125,20 @@ app.MapGet("/logout", async (HttpContext ctx) =>
     return Results.Redirect("/");
 });
 
+app.MapPost("/internal-login", async (HttpContext context, LoginModel login, LoginService loginService) =>
+{
+    // Validate and sign in user
+    var principal = await loginService.LoginInternalAsyncHttp(login, context);
+    if (principal == null)
+    {
+        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        await context.Response.WriteAsync("Invalid email or password");
+        return;
+    }
+
+    // Redirect to home page (or wherever)
+    context.Response.Redirect("/");
+});
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

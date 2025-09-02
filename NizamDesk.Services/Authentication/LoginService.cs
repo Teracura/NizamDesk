@@ -1,19 +1,46 @@
 using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NizamDesk.UI;
 using Teracura.TestingWebApp.Entities;
 
 namespace Teracura.TestingWebApp.Interfaces.Authentication;
 
-public static class AuthDataCollectionService
+public class LoginService(UserService userService, PasswordServices passwordService)
 {
-    public static void AddOAuthProviders(this AuthenticationBuilder builder, IConfiguration config)
+    public async Task<ClaimsPrincipal?> LoginInternalAsyncHttp(LoginModel login, HttpContext context)
+    {
+        var email = login.Email?.Trim().ToLowerInvariant();
+        if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(login.Password))
+            return null;
+
+        var user = await userService.GetUserAsyncIfNotInternal(email);
+        if (user == null) return null;
+
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new(ClaimTypes.Name, user.Name),
+            new(ClaimTypes.Email, user.Email)
+        };
+
+        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        var principal = new ClaimsPrincipal(identity);
+
+        // Set cookie
+        await context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+        return principal;
+    }
+
+    public static void ConfigureExternalProviders(AuthenticationBuilder builder, IConfiguration config)
     {
         var providers = config.GetSection("OAuthClients")
-            .Get<List<OAuthClientConfiguration>>() ?? new List<OAuthClientConfiguration>();
+            .Get<List<OAuthClientConfiguration>>() ?? [];
 
         foreach (var provider in providers)
         {
@@ -47,14 +74,15 @@ public static class AuthDataCollectionService
                     response.EnsureSuccessStatusCode();
 
                     using var userDoc = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
-
                     context.RunClaimActions(userDoc.RootElement);
 
                     var email = context.Principal!.FindFirstValue(ClaimTypes.Email);
                     if (string.IsNullOrEmpty(email))
                         throw new InvalidOperationException("Email is required to create a user.");
 
-                    var userService = context.HttpContext.RequestServices.GetRequiredService<UserServices>();
+                    // Resolve UserServices from DI
+                    var userService = context.HttpContext.RequestServices.GetRequiredService<UserService>();
+
                     var externalInfo = new ExternalUserInfo(
                         Provider: context.Scheme.Name,
                         ProviderId: context.Principal!.FindFirstValue(ClaimTypes.NameIdentifier)!,
