@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
-using Teracura.TestingWebApp.Interfaces;
-using Teracura.TestingWebApp.Interfaces.Authentication;
-using Teracura.TestingWebApp.Logic.Data;
-using Teracura.TestingWebApp.Logic;
+using NizamDesk.Services;
+using NizamDesk.Services.Authentication;
+using NizamDesk.Logic.Data;
+using NizamDesk.Logic;
 using App = NizamDesk.UI.Components.App;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,7 +39,7 @@ var authBuilder = builder.Services.AddAuthentication(CookieAuthenticationDefault
 authBuilder.AddOAuthProviders(builder.Configuration);
 
 builder.Services.AddScoped<ExternalLoginManager>();
-builder.Services.AddScoped<ExternalLoginService>();
+builder.Services.AddScoped<IExternalLoginService, ExternalLoginService>();
 
 builder.Services.AddAuthorization();
 builder.Services.AddAuthorizationCore();

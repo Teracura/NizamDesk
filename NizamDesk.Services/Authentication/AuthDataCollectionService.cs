@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NizamDesk.Entities;
 
-namespace NizamDesk.Interfaces.Authentication;
+namespace NizamDesk.Services.Authentication;
 
 public static class AuthDataCollectionService
 {
@@ -54,7 +54,7 @@ public static class AuthDataCollectionService
                     if (string.IsNullOrEmpty(email))
                         throw new InvalidOperationException("Email is required to create a user.");
 
-                    var userService = context.HttpContext.RequestServices.GetRequiredService<ExternalLoginService>();
+                    var userService = context.HttpContext.RequestServices.GetRequiredService<IExternalLoginService>();
                     var externalInfo = new ExternalUserInfo(
                         Provider: context.Scheme.Name,
                         ProviderId: context.Principal!.FindFirstValue(ClaimTypes.NameIdentifier)!,

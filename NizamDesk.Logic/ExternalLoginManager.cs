@@ -65,4 +65,13 @@ public class ExternalLoginManager
         await _db.SaveChangesAsync();
         return user;
     }
+
+    public async Task<User?> GetUserByExternalLoginAsync(string provider, string providerId)
+    {
+        var externalLogin = await _db.ExternalLogins
+            .Include(el => el.User)
+            .FirstOrDefaultAsync(el => el.Provider == provider && el.ProviderId == providerId);
+
+        return externalLogin?.User;
+    }
 }
