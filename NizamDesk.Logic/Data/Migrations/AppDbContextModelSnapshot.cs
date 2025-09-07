@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Teracura.TestingWebApp.Logic.Data;
+using NizamDesk.Logic.Data;
 
 #nullable disable
 
-namespace Teracura.TestingWebApp.Logic.Data.Migrations
+namespace NizamDesk.Logic.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     partial class AppDbContextModelSnapshot : ModelSnapshot
@@ -22,7 +22,7 @@ namespace Teracura.TestingWebApp.Logic.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Teracura.TestingWebApp.Entities.Companies.Company", b =>
+            modelBuilder.Entity("NizamDesk.Entities.Companies.Company", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -40,7 +40,7 @@ namespace Teracura.TestingWebApp.Logic.Data.Migrations
                     b.ToTable("Companies");
                 });
 
-            modelBuilder.Entity("Teracura.TestingWebApp.Entities.Companies.CompanyMembership", b =>
+            modelBuilder.Entity("NizamDesk.Entities.Companies.CompanyMembership", b =>
                 {
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -53,7 +53,7 @@ namespace Teracura.TestingWebApp.Logic.Data.Migrations
                     b.ToTable("CompanyMemberships");
                 });
 
-            modelBuilder.Entity("Teracura.TestingWebApp.Entities.Projects.Project", b =>
+            modelBuilder.Entity("NizamDesk.Entities.Projects.Project", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -73,7 +73,7 @@ namespace Teracura.TestingWebApp.Logic.Data.Migrations
                     b.ToTable("Projects");
                 });
 
-            modelBuilder.Entity("Teracura.TestingWebApp.Entities.Projects.ProjectMembership", b =>
+            modelBuilder.Entity("NizamDesk.Entities.Projects.ProjectMembership", b =>
                 {
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -89,7 +89,7 @@ namespace Teracura.TestingWebApp.Logic.Data.Migrations
                     b.ToTable("ProjectMemberships");
                 });
 
-            modelBuilder.Entity("Teracura.TestingWebApp.Entities.Projects.Ticket", b =>
+            modelBuilder.Entity("NizamDesk.Entities.Projects.Ticket", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -125,7 +125,7 @@ namespace Teracura.TestingWebApp.Logic.Data.Migrations
                     b.ToTable("Tickets");
                 });
 
-            modelBuilder.Entity("Teracura.TestingWebApp.Entities.Roles.Role", b =>
+            modelBuilder.Entity("NizamDesk.Entities.Roles.Role", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -149,7 +149,7 @@ namespace Teracura.TestingWebApp.Logic.Data.Migrations
                     b.ToTable("Roles");
                 });
 
-            modelBuilder.Entity("Teracura.TestingWebApp.Entities.Users.ExternalLogin", b =>
+            modelBuilder.Entity("NizamDesk.Entities.Users.ExternalLogin", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -176,7 +176,7 @@ namespace Teracura.TestingWebApp.Logic.Data.Migrations
                     b.ToTable("ExternalLogins");
                 });
 
-            modelBuilder.Entity("Teracura.TestingWebApp.Entities.Users.User", b =>
+            modelBuilder.Entity("NizamDesk.Entities.Users.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -202,7 +202,7 @@ namespace Teracura.TestingWebApp.Logic.Data.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Teracura.TestingWebApp.Entities.Users.UserRole", b =>
+            modelBuilder.Entity("NizamDesk.Entities.Users.UserRole", b =>
                 {
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -215,38 +215,38 @@ namespace Teracura.TestingWebApp.Logic.Data.Migrations
                     b.ToTable("UserRoles");
                 });
 
-            modelBuilder.Entity("Teracura.TestingWebApp.Entities.Projects.Project", b =>
+            modelBuilder.Entity("NizamDesk.Entities.Projects.Project", b =>
                 {
-                    b.HasOne("Teracura.TestingWebApp.Entities.Companies.Company", null)
+                    b.HasOne("NizamDesk.Entities.Companies.Company", null)
                         .WithMany()
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Teracura.TestingWebApp.Entities.Projects.Ticket", b =>
+            modelBuilder.Entity("NizamDesk.Entities.Projects.Ticket", b =>
                 {
-                    b.HasOne("Teracura.TestingWebApp.Entities.Users.User", null)
+                    b.HasOne("NizamDesk.Entities.Users.User", null)
                         .WithMany()
                         .HasForeignKey("AssignedUserId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("Teracura.TestingWebApp.Entities.Users.User", null)
+                    b.HasOne("NizamDesk.Entities.Users.User", null)
                         .WithMany()
                         .HasForeignKey("CreatorId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Teracura.TestingWebApp.Entities.Projects.Project", null)
+                    b.HasOne("NizamDesk.Entities.Projects.Project", null)
                         .WithMany()
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Teracura.TestingWebApp.Entities.Users.ExternalLogin", b =>
+            modelBuilder.Entity("NizamDesk.Entities.Users.ExternalLogin", b =>
                 {
-                    b.HasOne("Teracura.TestingWebApp.Entities.Users.User", "User")
+                    b.HasOne("NizamDesk.Entities.Users.User", "User")
                         .WithMany("ExternalLogins")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -255,7 +255,7 @@ namespace Teracura.TestingWebApp.Logic.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Teracura.TestingWebApp.Entities.Users.User", b =>
+            modelBuilder.Entity("NizamDesk.Entities.Users.User", b =>
                 {
                     b.Navigation("ExternalLogins");
                 });

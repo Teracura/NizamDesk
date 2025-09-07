@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Shouldly;
-using Teracura.TestingWebApp.Entities.Companies;
-using Teracura.TestingWebApp.Entities.Projects;
-using Teracura.TestingWebApp.Entities.Roles;
-using Teracura.TestingWebApp.Entities.Users;
-using Teracura.TestingWebApp.Logic.Data;
+using NizamDesk.Entities.Companies;
+using NizamDesk.Entities.Projects;
+using NizamDesk.Entities.Roles;
+using NizamDesk.Entities.Users;
+using NizamDesk.Logic.Data;
 
-namespace Teracura.TestingWebApp.Tests;
+namespace NizamDesk.Tests;
 
 public class DatabaseTests
 {

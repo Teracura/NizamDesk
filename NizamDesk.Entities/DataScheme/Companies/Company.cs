@@ -1,4 +1,4 @@
-﻿namespace Teracura.TestingWebApp.Entities.Companies;
+﻿namespace NizamDesk.Entities.Companies;
 
 public class Company
 {

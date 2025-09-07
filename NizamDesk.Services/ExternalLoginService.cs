@@ -1,8 +1,8 @@
-using Teracura.TestingWebApp.Entities;
-using Teracura.TestingWebApp.Entities.Users;
-using Teracura.TestingWebApp.Logic;
+using NizamDesk.Entities;
+using NizamDesk.Entities.Users;
+using NizamDesk.Logic;
 
-namespace Teracura.TestingWebApp.Interfaces;
+namespace NizamDesk.Interfaces;
 
 public class ExternalLoginService(ExternalLoginManager manager)
 {

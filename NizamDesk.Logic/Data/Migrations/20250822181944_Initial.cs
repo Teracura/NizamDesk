@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Teracura.TestingWebApp.Logic.Data.Migrations
+namespace NizamDesk.Logic.Data.Migrations
 {
     /// <inheritdoc />
     public partial class Initial : Migration

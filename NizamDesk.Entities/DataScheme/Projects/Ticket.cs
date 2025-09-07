@@ -1,4 +1,4 @@
-﻿namespace Teracura.TestingWebApp.Entities.Projects;
+﻿namespace NizamDesk.Entities.Projects;
 
 public class Ticket
 {

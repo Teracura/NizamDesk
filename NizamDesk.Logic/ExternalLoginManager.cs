@@ -1,11 +1,11 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
-using Teracura.TestingWebApp.Entities;
-using Teracura.TestingWebApp.Entities.Users;
-using Teracura.TestingWebApp.Logic.Data;
+using NizamDesk.Entities;
+using NizamDesk.Entities.Users;
+using NizamDesk.Logic.Data;
 
-namespace Teracura.TestingWebApp.Logic;
+namespace NizamDesk.Logic;
 
 public class ExternalLoginManager
 {

@@ -1,4 +1,4 @@
-﻿namespace Teracura.TestingWebApp.Entities.Users;
+﻿namespace NizamDesk.Entities.Users;
 
 public class UserRole
 {

@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Teracura.TestingWebApp.Entities;
+using NizamDesk.Entities;
 
-namespace Teracura.TestingWebApp.Interfaces.Authentication;
+namespace NizamDesk.Interfaces.Authentication;
 
 public static class AuthDataCollectionService
 {

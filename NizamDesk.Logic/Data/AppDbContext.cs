@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Teracura.TestingWebApp.Entities.Companies;
-using Teracura.TestingWebApp.Entities.Projects;
-using Teracura.TestingWebApp.Entities.Roles;
-using Teracura.TestingWebApp.Entities.Users;
+using NizamDesk.Entities.Companies;
+using NizamDesk.Entities.Projects;
+using NizamDesk.Entities.Roles;
+using NizamDesk.Entities.Users;
 
-namespace Teracura.TestingWebApp.Logic.Data;
+namespace NizamDesk.Logic.Data;
 
 public class AppDbContext : DbContext
 {

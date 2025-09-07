@@ -1,4 +1,4 @@
-﻿namespace Teracura.TestingWebApp.Entities.Roles;
+﻿namespace NizamDesk.Entities.Roles;
 
 public class Role
 {

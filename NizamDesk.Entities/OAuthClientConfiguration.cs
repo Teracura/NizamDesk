@@ -1,4 +1,4 @@
-namespace Teracura.TestingWebApp.Entities;
+namespace NizamDesk.Entities;
 
 public class OAuthClientConfiguration
 {
