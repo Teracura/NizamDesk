@@ -1,118 +1,118 @@
-﻿@page "/login"
-@using Teracura.TestingWebApp.Interfaces
-@inject NavigationManager NavigationManager
-@inject PasswordServices PasswordService
-@inject UserService UserService
-@inject EmailService EmailService
-@rendermode InteractiveServer
-
-<div class="d-flex justify-content-center align-items-center vh-100">
-    <div class="card shadow p-4" style="max-width: 500px; width: 100%;">
-        <div class="card-body">
-
-            <h3 class="text-center mb-4">Login</h3>
-
-            <EditForm Model="@_loginModel" OnValidSubmit="HandleLogin">
-                <DataAnnotationsValidator/>
-                <ValidationSummary/>
-
-                <div class="text-center mb-3">
-                    <p>Sign in with:</p>
-                    <a class="btn btn-link mx-1" href="/login/google">
-                        <img src="/images/google-color-icon.svg" alt="Google" width="30" height="30"/>
-                    </a>
-                    <a class="btn btn-link mx-1" href="/login/discord">
-                        <img src="/images/discord-round-color-icon.svg" alt="Discord" width="30" height="30"/>
-                    </a>
-                    <a class="btn btn-link mx-1" href="/login/github">
-                        <img class="github-logo" src="/images/github-icon.svg" alt="Github" width="30" height="30"/>
-                    </a>
-                </div>
-
-                <p class="text-center">or sign in with email:</p>
-
-                <!-- Email -->
-                <div class="mb-3">
-                    <label for="loginEmail" class="form-label">Email</label>
-                    <InputText id="loginEmail" type="email" class="form-control" @bind-Value="_loginModel.Email"/>
-                </div>
-
-                <!-- Password -->
-                <div class="mb-3 position-relative">
-                    <label for="loginPassword" class="form-label">Password</label>
-                    <InputText id="loginPassword" type="@(_showPassword ? "text" : "password")" class="form-control"
-                               @bind-Value="_loginModel.Password"/>
-                </div>
-
-                <!-- Remember Me -->
-                <div class="form-check d-flex justify-content-center mb-3">
-                    <InputCheckbox id="loginCheck" class="form-check-input me-2" @bind-Value="_loginModel.RememberMe"/>
-                    <label for="loginCheck" class="form-check-label">Remember me</label>
-                </div>
-
-                @if (_showErrorMessage)
-                {
-                    <div class="alert alert-danger text-center">@_errorMessage</div>
-                }
-
-                <button type="submit" class="btn btn-primary w-100 mb-3">Sign in</button>
-
-                <div class="text-center">
-                    <p>Not a member?
-                        <NavLink class="text-primary" href="/register">Register</NavLink>
-                    </p>
-                </div>
-            </EditForm>
-
-        </div>
-    </div>
-</div>
-
-@code {
-    private LoginModel _loginModel = new();
-    private string? _errorMessage;
-    private bool _showPassword;
-    private bool _showErrorMessage;
-
-    private async Task HandleLogin()
-    {
-        if (string.IsNullOrWhiteSpace(_loginModel.Email) || string.IsNullOrWhiteSpace(_loginModel.Password))
-        {
-            _errorMessage = "Email and password are required.";
-            _showErrorMessage = true;
-            return;
-        }
-        
-        var email = _loginModel.Email.ToLowerInvariant().Trim();
-        var password = _loginModel.Password;
-        
-        if (EmailService.IsValidEmail(email))
-        {
-            _errorMessage = "Email or password are invalid";
-            _showErrorMessage = true;
-            return;
-        }
-        
-        var user = await UserService.GetUserAsync(email);
-
-        if (user is null)
-        {
-            _errorMessage = "Email or password are invalid";
-            _showErrorMessage = true;
-            return;
-        }
-
-        var isValid = PasswordService.VerifyPassword(password, user!.PasswordHash!, user.Salt!);
-        if (!isValid)
-        {
-            _errorMessage = "Email or password are invalid";
-            _showErrorMessage = true;
-            return;
-        }
-
-        _showErrorMessage = false;
-        var query = $"?email={Uri.EscapeDataString(email)}&password={Uri.EscapeDataString(password)}";
-        NavigationManager.NavigateTo("/login/internal" + query, forceLoad: true);
-    }
-
-}
+﻿@* @page "/login" *@
+@* @using Teracura.TestingWebApp.Interfaces *@
+@* @inject NavigationManager NavigationManager *@
+@* @inject PasswordServices PasswordService *@
+@* @inject UserService UserService *@
+@* @inject EmailService EmailService *@
+@* @rendermode InteractiveServer *@
+@* *@
+@* <div class="d-flex justify-content-center align-items-center vh-100"> *@
+@*     <div class="card shadow p-4" style="max-width: 500px; width: 100%;"> *@
+@*         <div class="card-body"> *@
+@* *@
+@*             <h3 class="text-center mb-4">Login</h3> *@
+@* *@
+@*             <EditForm Model="@_loginModel" OnValidSubmit="HandleLogin"> *@
+@*                 <DataAnnotationsValidator/> *@
+@*                 <ValidationSummary/> *@
+@* *@
+@*                 <div class="text-center mb-3"> *@
+@*                     <p>Sign in with:</p> *@
+@*                     <a class="btn border-0 shadow-none mx-auto" href="/login/google"> *@
+@*                         <img src="/images/google-color-icon.svg" alt="Google" width="30" height="30"/> *@
+@*                     </a> *@
+@*                     <a class="btn border-0 shadow-none mx-auto" href="/login/discord"> *@
+@*                         <img src="/images/discord-round-color-icon.svg" alt="Discord" width="30" height="30"/> *@
+@*                     </a> *@
+@*                     <a class="btn border-0 shadow-none mx-auto" href="/login/github"> *@
+@*                         <img class="github-logo" src="/images/github-icon.svg" alt="Github" width="30" height="30"/> *@
+@*                     </a> *@
+@*                 </div> *@
+@* *@
+@*                 <p class="text-center">or sign in with email:</p> *@
+@* *@
+@*                 <!-- Email --> *@
+@*                 <div class="mb-3"> *@
+@*                     <label for="loginEmail" class="form-label">Email</label> *@
+@*                     <InputText id="loginEmail" type="email" class="form-control" @bind-Value="_loginModel.Email"/> *@
+@*                 </div> *@
+@* *@
+@*                 <!-- Password --> *@
+@*                 <div class="mb-3 position-relative"> *@
+@*                     <label for="loginPassword" class="form-label">Password</label> *@
+@*                     <InputText id="loginPassword" type="@(_showPassword ? "text" : "password")" class="form-control" *@
+@*                                @bind-Value="_loginModel.Password"/> *@
+@*                 </div> *@
+@* *@
+@*                 <!-- Remember Me --> *@
+@*                 <div class="form-check d-flex justify-content-center mb-3"> *@
+@*                     <InputCheckbox id="loginCheck" class="form-check-input me-2" @bind-Value="_loginModel.RememberMe"/> *@
+@*                     <label for="loginCheck" class="form-check-label">Remember me</label> *@
+@*                 </div> *@
+@* *@
+@*                 @if (_showErrorMessage) *@
+@*                 { *@
+@*                     <div class="alert alert-danger text-center">@_errorMessage</div> *@
+@*                 } *@
+@* *@
+@*                 <button type="submit" class="btn btn-outline-primary w-100 mb-3">Sign in</button> *@
+@* *@
+@*                 <div class="text-center"> *@
+@*                     <p>Not a member? *@
+@*                         <NavLink class="text-primary" href="/register">Register</NavLink> *@
+@*                     </p> *@
+@*                 </div> *@
+@*             </EditForm> *@
+@* *@
+@*         </div> *@
+@*     </div> *@
+@* </div> *@
+@* *@
+@* @code { *@
+@*     private LoginModel _loginModel = new(); *@
+@*     private string? _errorMessage; *@
+@*     private bool _showPassword; *@
+@*     private bool _showErrorMessage; *@
+@* *@
+@*     private async Task HandleLogin() *@
+@*     { *@
+@*         if (string.IsNullOrWhiteSpace(_loginModel.Email) || string.IsNullOrWhiteSpace(_loginModel.Password)) *@
+@*         { *@
+@*             _errorMessage = "Email and password are required."; *@
+@*             _showErrorMessage = true; *@
+@*             return; *@
+@*         } *@
+@* *@
+@*         var email = _loginModel.Email.ToLowerInvariant().Trim(); *@
+@*         var password = _loginModel.Password; *@
+@* *@
+@*         if (EmailService.IsValidEmail(email)) *@
+@*         { *@
+@*             _errorMessage = "Email or password are invalid"; *@
+@*             _showErrorMessage = true; *@
+@*             return; *@
+@*         } *@
+@* *@
+@*         var user = await UserService.GetUserAsync(email); *@
+@* *@
+@*         if (user is null) *@
+@*         { *@
+@*             _errorMessage = "Email or password are invalid"; *@
+@*             _showErrorMessage = true; *@
+@*             return; *@
+@*         } *@
+@* *@
+@*         var isValid = PasswordService.VerifyPassword(password, user!.PasswordHash!, user.Salt!); *@
+@*         if (!isValid) *@
+@*         { *@
+@*             _errorMessage = "Email or password are invalid"; *@
+@*             _showErrorMessage = true; *@
+@*             return; *@
+@*         } *@
+@* *@
+@*         _showErrorMessage = false; *@
+@*         var query = $"?email={Uri.EscapeDataString(email)}&password={Uri.EscapeDataString(password)}"; *@
+@*         NavigationManager.NavigateTo("/login/internal" + query, forceLoad: true); *@
+@*     } *@
+@* *@
+@* } *@

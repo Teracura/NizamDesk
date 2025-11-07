@@ -8,8 +8,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\NizamDesk.API\NizamDesk.API.csproj" />
       <ProjectReference Include="..\NizamDesk.Entities\NizamDesk.Entities.csproj" />
-      <ProjectReference Include="..\NizamDesk.Logic\NizamDesk.Logic.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -11,7 +11,7 @@
     <ItemGroup>
         <PackageReference Include="BouncyCastle.Cryptography" Version="2.6.2" />
         <PackageReference Include="coverlet.collector" Version="6.0.2"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.8" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.10" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.8">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -29,13 +29,13 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\NizamDesk.Logic\NizamDesk.Logic.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
       <None Update="testsettings.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\NizamDesk.API\NizamDesk.API.csproj" />
     </ItemGroup>
 
 </Project>

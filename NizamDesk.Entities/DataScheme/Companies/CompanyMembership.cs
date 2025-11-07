@@ -2,6 +2,6 @@
 
 public class CompanyMembership
 {
-    public Guid CompanyId { get; set; }
-    public Guid UserId { get; set; }
+    public required Guid CompanyId { get; set; }
+    public required Guid UserId { get; set; }
 }

@@ -1,5 +1,5 @@
 ﻿using System.Text.RegularExpressions;
-using Teracura.TestingWebApp.Logic.Cryptography;
+using NizamDesk.API.Cryptography;
 
 namespace Teracura.TestingWebApp.Interfaces;
 
@@ -10,12 +10,12 @@ public partial class PasswordServices(PasswordManager passwordManager)
 
     public (byte[] Hash, byte[] Salt) HashPassword(string password)
     {
-        return passwordManager.HashPassword(password);
+        return PasswordManager.HashPassword(password);
     }
 
     public bool VerifyPassword(string password, byte[] hash, byte[] salt)
     {
-        return passwordManager.VerifyPassword(hash, salt, password);
+        return PasswordManager.VerifyPassword(hash, salt, password);
     }
 
     public bool IsStrongPassword(string password)

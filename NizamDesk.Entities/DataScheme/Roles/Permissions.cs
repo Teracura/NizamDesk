@@ -10,4 +10,6 @@ public enum Permissions
     ManageProjects = 1 << 3,
     ManageTickets = 1 << 4,
     Chat = 1 << 5
-} //to get the total permission of all roles a user has, use bitwise OR
+} 
+
+//to get the total permission of all roles a user has, use bitwise OR

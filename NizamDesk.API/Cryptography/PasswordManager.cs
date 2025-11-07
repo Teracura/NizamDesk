@@ -1,10 +1,10 @@
 ﻿using System.Security.Cryptography;
 
-namespace Teracura.TestingWebApp.Logic.Cryptography;
+namespace NizamDesk.API.Cryptography;
 
 public class PasswordManager
 {
-    public (byte[] Hash, byte[] Salt) HashPassword(string password)
+    public static (byte[] Hash, byte[] Salt) HashPassword(string password)
     {
         var salt = RandomNumberGenerator.GetBytes(16);
         var pepper = (char)RandomNumberGenerator.GetInt32(fromInclusive: 100, toExclusive: 128);
@@ -14,7 +14,7 @@ public class PasswordManager
         return (hash, salt);
     }
 
-    public bool VerifyPassword(byte[]? hash, byte[]? salt, string password)
+    public static bool VerifyPassword(byte[]? hash, byte[]? salt, string password)
     {
         if (hash == null || salt == null)
         {
