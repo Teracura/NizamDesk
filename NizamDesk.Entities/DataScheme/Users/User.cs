@@ -1,4 +1,6 @@
-﻿namespace Teracura.TestingWebApp.Entities.Users;
+﻿using Teracura.TestingWebApp.Entities.DataScheme.Users;
+
+namespace Teracura.TestingWebApp.Entities.Users;
 
 public class User
 {

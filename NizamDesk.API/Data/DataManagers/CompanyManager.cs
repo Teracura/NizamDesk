@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NizamDesk.API.Cryptography;
 using NizamDesk.API.EndpointEntities.Companies;
-using Teracura.TestingWebApp.Entities.Companies;
 using Teracura.TestingWebApp.Entities.DataScheme.Companies;
 
 namespace NizamDesk.API.Data.DataManagers;
@@ -152,5 +151,4 @@ public class CompanyManager(IDbContextFactory<AppDbContext> dbContextFactory)
 
         return true;
     }
-
 }

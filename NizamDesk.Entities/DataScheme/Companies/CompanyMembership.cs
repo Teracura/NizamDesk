@@ -1,4 +1,4 @@
-﻿namespace Teracura.TestingWebApp.Entities.Companies;
+﻿namespace Teracura.TestingWebApp.Entities.DataScheme.Companies;
 
 public class CompanyMembership
 {

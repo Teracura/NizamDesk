@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Teracura.TestingWebApp.Entities.Companies;
 using Teracura.TestingWebApp.Entities.DataScheme.Companies;
 using Teracura.TestingWebApp.Entities.DataScheme.Projects;
+using Teracura.TestingWebApp.Entities.DataScheme.Users;
 using Teracura.TestingWebApp.Entities.Projects;
 using Teracura.TestingWebApp.Entities.Roles;
 using Teracura.TestingWebApp.Entities.Users;

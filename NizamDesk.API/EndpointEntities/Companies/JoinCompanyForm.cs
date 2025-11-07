@@ -1,4 +1,6 @@
-﻿public record JoinCompanyForm
+﻿namespace NizamDesk.API.EndpointEntities.Companies;
+
+public record JoinCompanyForm
 {
     public Guid UserId { get; set; }
     public string CompanyName { get; set; } = string.Empty;

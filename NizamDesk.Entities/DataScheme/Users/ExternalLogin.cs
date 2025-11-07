@@ -1,4 +1,6 @@
-namespace Teracura.TestingWebApp.Entities.Users;
+using Teracura.TestingWebApp.Entities.Users;
+
+namespace Teracura.TestingWebApp.Entities.DataScheme.Users;
 
 public class ExternalLogin
 {
