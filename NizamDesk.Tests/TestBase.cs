@@ -1,7 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NizamDesk.API.Cryptography;
-using NizamDesk.API.Data.DataManagers;
+using NizamDesk.API.Data;
+using NizamDesk.API.Services;
 
 namespace Teracura.TestingWebApp.Tests;
 
@@ -18,15 +19,13 @@ public class TestBase
             .AddJsonFile("testsettings.json", optional: false)
             .Build();
 
-        string connectionString = config.GetConnectionString("DefaultConnection")!;
+        var connectionString = config.GetConnectionString("DefaultConnection")!;
         
-        //TODO: Implement new database
-        
-        // services.AddDbContextFactory<AppDbContext>(options =>
-        //     options.UseSqlServer(connectionString));
+        services.AddDbContextFactory<AppDbContext>(options =>
+            options.UseNpgsql(connectionString));
 
-        services.AddScoped<UserManager>();
-        services.AddScoped<PasswordManager>();
+        services.AddScoped<UserService>();
+        services.AddScoped<PasswordService>();
 
         _serviceProvider = services.BuildServiceProvider();
     }

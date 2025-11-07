@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
-using NizamDesk.API.Data.DataManagers;
 using NizamDesk.API.EndpointEntities;
+using NizamDesk.API.Services;
 
 namespace NizamDesk.API.EndPoints;
 
@@ -11,7 +11,7 @@ public abstract class UserEndpoints : IEndpointMapper
         //<summary>
         // adds new user to the database
         //</summary>
-        app.MapPost("/api/users", async (UserManager manager, UserCreateRequest userRequest) =>
+        app.MapPost("/api/users", async (UserService manager, UserCreateRequest userRequest) =>
         {
             var createdUser = await manager.AddUserAsync(userRequest).ConfigureAwait(false);
 
@@ -23,7 +23,7 @@ public abstract class UserEndpoints : IEndpointMapper
         //<summary>
         // deletes user from the database via ID
         //</summary>
-        app.MapDelete("/api/users/{userId:guid}", async (UserManager manager, Guid userId) =>
+        app.MapDelete("/api/users/{userId:guid}", async (UserService manager, Guid userId) =>
         {
             var deleted = await manager.DeleteUserAsync(userId);
             return deleted ? Results.NoContent() : Results.NotFound();
@@ -32,7 +32,7 @@ public abstract class UserEndpoints : IEndpointMapper
         //<summary>
         // returns user from the database via ID
         //</summary>
-        app.MapGet("/api/users/{userId:guid}", async (UserManager manager, Guid userId) =>
+        app.MapGet("/api/users/{userId:guid}", async (UserService manager, Guid userId) =>
         {
             var user = await manager.GetUserAsync(userId);
             return user == null ? Results.NotFound() : Results.Ok(user);
@@ -41,7 +41,7 @@ public abstract class UserEndpoints : IEndpointMapper
         //<summary>
         // returns all user IDs from the database
         //</summary>
-        app.MapGet("/api/users", async (UserManager manager) =>
+        app.MapGet("/api/users", async (UserService manager) =>
         {
             var users = await manager.GetUsersAsync();
             return Results.Ok(users);
@@ -50,7 +50,7 @@ public abstract class UserEndpoints : IEndpointMapper
         //<summary>
         // updates user in the database via ID
         //</summary>
-        app.MapPut("/api/users/{userId:guid}", async (UserManager manager, Guid userId, UserUpdateRequest user) =>
+        app.MapPut("/api/users/{userId:guid}", async (UserService manager, Guid userId, UserUpdateRequest user) =>
         {
             var resultUser = await manager.UpdateUserAsync(userId, user).ConfigureAwait(false);
             return resultUser is null ? Results.NotFound() : Results.Ok(resultUser);

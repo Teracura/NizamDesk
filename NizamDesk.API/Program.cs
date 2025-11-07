@@ -1,16 +1,16 @@
 using Microsoft.EntityFrameworkCore;
 using NizamDesk.API;
 using NizamDesk.API.Data;
-using NizamDesk.API.Data.DataManagers;
 using NizamDesk.API.EndPoints;
+using NizamDesk.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContextFactory<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddScoped<UserManager>();
-builder.Services.AddScoped<CompanyManager>();
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<CompanyService>();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();

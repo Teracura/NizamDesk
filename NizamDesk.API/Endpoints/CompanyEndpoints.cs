@@ -1,6 +1,5 @@
-﻿using NizamDesk.API.Data.DataManagers;
-using NizamDesk.API.EndpointEntities;
-using NizamDesk.API.EndpointEntities.Companies;
+﻿using NizamDesk.API.EndpointEntities.Companies;
+using NizamDesk.API.Services;
 
 namespace NizamDesk.API.EndPoints;
 
@@ -8,7 +7,7 @@ public abstract class CompanyEndPoints : IEndpointMapper
 {
     public static Task Map(IEndpointRouteBuilder app)
     {
-        app.MapPost("/api/companies", async (CompanyManager manager, CompanyCreateRequest request) =>
+        app.MapPost("/api/companies", async (CompanyService manager, CompanyCreateRequest request) =>
         {
             var createdCompany = await manager.CreateCompanyAsync(request).ConfigureAwait(false);
             return createdCompany is null
@@ -17,29 +16,29 @@ public abstract class CompanyEndPoints : IEndpointMapper
         });
 
         app.MapDelete("/api/companies/{companyId:guid}",
-            async (CompanyManager manager, Guid companyId) =>
+            async (CompanyService manager, Guid companyId) =>
                 await (manager.DeleteCompanyAsync(companyId)).ConfigureAwait(false)
                     ? Results.NoContent()
                     : Results.NotFound());
 
-        app.MapGet("/api/companies/{companyId:guid}", async (CompanyManager manager, Guid companyId) =>
+        app.MapGet("/api/companies/{companyId:guid}", async (CompanyService manager, Guid companyId) =>
         {
             var response = await manager.GetCompanyAsync(companyId).ConfigureAwait(false);
             return response is null ? Results.NotFound() : Results.Ok(response);
         });
 
         app.MapGet("/api/companies",
-            async (CompanyManager manager) => await manager.GetCompaniesAsync().ConfigureAwait(false));
+            async (CompanyService manager) => await manager.GetCompaniesAsync().ConfigureAwait(false));
 
         app.MapPut("/api/companies/{companyId:guid}",
-            async (CompanyManager manager, Guid companyId, CompanyUpdateRequest request) =>
+            async (CompanyService manager, Guid companyId, CompanyUpdateRequest request) =>
             {
                 var companyResponse = await manager.UpdateCompanyAsync(companyId, request).ConfigureAwait(false);
                 return companyResponse is null ? Results.NotFound() : Results.Ok(companyResponse);
             });
 
         app.MapPost("/api/companies/{companyId:guid}/members",
-            async (CompanyManager manager, Guid companyId, JoinCompanyForm form) =>
+            async (CompanyService manager, Guid companyId, JoinCompanyForm form) =>
             {
                 var status = await manager.UserJoinCompanyAsync(companyId, form).ConfigureAwait(false);
                 return status switch
@@ -52,7 +51,7 @@ public abstract class CompanyEndPoints : IEndpointMapper
             });
         
         app.MapDelete("/api/companies/{companyId:guid}/members/{userId:guid}",
-            async (CompanyManager manager, Guid companyId, Guid userId) =>
+            async (CompanyService manager, Guid companyId, Guid userId) =>
             {
                 var status = await manager.UserLeaveCompanyAsync(companyId, userId).ConfigureAwait(false);
 

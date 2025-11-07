@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using NizamDesk.API.Cryptography;
+using NizamDesk.API.Data;
 using NizamDesk.API.EndpointEntities.Companies;
 using Teracura.TestingWebApp.Entities.DataScheme.Companies;
 
-namespace NizamDesk.API.Data.DataManagers;
+namespace NizamDesk.API.Services;
 
-public class CompanyManager(IDbContextFactory<AppDbContext> dbContextFactory)
+public class CompanyService(IDbContextFactory<AppDbContext> dbContextFactory)
 {
     public async Task<CompanyResponse?> CreateCompanyAsync(CompanyCreateRequest request)
     {
@@ -13,7 +13,7 @@ public class CompanyManager(IDbContextFactory<AppDbContext> dbContextFactory)
         var company = await db.Companies
             .FirstOrDefaultAsync(c => c.Name == request.Name)
             .ConfigureAwait(false);
-        var passPair = PasswordManager.HashPassword(request.Password);
+        var passPair = PasswordService.HashPassword(request.Password);
         var newCompany = new Company
         {
             Id = Guid.NewGuid(),
@@ -84,7 +84,7 @@ public class CompanyManager(IDbContextFactory<AppDbContext> dbContextFactory)
 
         if (request.Password is not null && currentCompany is not null)
         {
-            var passPair = PasswordManager.HashPassword(request.Password);
+            var passPair = PasswordService.HashPassword(request.Password);
             currentCompany.EntryPassword = passPair.Hash;
             currentCompany.EntrySalt = passPair.Salt;
         }
@@ -110,7 +110,7 @@ public class CompanyManager(IDbContextFactory<AppDbContext> dbContextFactory)
         var user = await db.Users.FindAsync(form.UserId).ConfigureAwait(false);
         if (user is null) return CompanyJoinStatus.UserNotFound;
 
-        var passwordOk = PasswordManager.VerifyPassword(company.EntryPassword, company.EntrySalt, form.Password);
+        var passwordOk = PasswordService.VerifyPassword(company.EntryPassword, company.EntrySalt, form.Password);
         if (!passwordOk || company.Id != companyId) return CompanyJoinStatus.CompanyNotFound;
 
         var alreadyMember = await db.CompanyMemberships

@@ -1,9 +1,12 @@
 ﻿using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 
-namespace NizamDesk.API.Cryptography;
+namespace NizamDesk.API.Services;
 
-public class PasswordManager
+public partial class PasswordService
 {
+    [GeneratedRegex(@"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*\-]).{8,}$")]
+    private static partial Regex StrongPasswordRegex();
     public static (byte[] Hash, byte[] Salt) HashPassword(string password)
     {
         var salt = RandomNumberGenerator.GetBytes(16);
@@ -35,5 +38,11 @@ public class PasswordManager
         }
 
         return false;
+    }
+
+    public bool IsStrongPassword(string password)
+    {
+        var regex = StrongPasswordRegex();
+        return regex.IsMatch(password);
     }
 }

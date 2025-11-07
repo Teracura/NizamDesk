@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Teracura.TestingWebApp.Interfaces;
+namespace NizamDesk.API.Services;
 
 public partial class EmailService
 {

@@ -1,11 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using NizamDesk.API.Cryptography;
+using NizamDesk.API.Data;
 using NizamDesk.API.EndpointEntities;
 using Teracura.TestingWebApp.Entities.Users;
 
-namespace NizamDesk.API.Data.DataManagers;
+namespace NizamDesk.API.Services;
 
-public class UserManager(IDbContextFactory<AppDbContext> dbContextFactory)
+public class UserService(IDbContextFactory<AppDbContext> dbContextFactory)
 {
     public async Task<UserResponse?> GetUserAsync(Guid id)
     {
@@ -49,7 +49,7 @@ public class UserManager(IDbContextFactory<AppDbContext> dbContextFactory)
 
         if (!string.IsNullOrEmpty(user.Password))
         {
-            var password = PasswordManager.HashPassword(user.Password);
+            var password = PasswordService.HashPassword(user.Password);
             currentUser.PasswordHash = password.Hash;
             currentUser.Salt = password.Salt;
         }
@@ -107,7 +107,7 @@ public class UserManager(IDbContextFactory<AppDbContext> dbContextFactory)
         user.Name = newUser.Name ?? user.Name;
         if (newUser.Password is not null)
         {
-            var password = PasswordManager.HashPassword(newUser.Password);
+            var password = PasswordService.HashPassword(newUser.Password);
             user.PasswordHash = password.Hash;
             user.Salt = password.Salt;
         }
