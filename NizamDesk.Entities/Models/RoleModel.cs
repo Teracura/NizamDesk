@@ -5,5 +5,5 @@ namespace Teracura.TestingWebApp.Entities.Models;
 public record RoleModel
 {
     public required string Name { get; set; }
-    public required Permissions Permissions;
+    public required Permissions Permissions { get; set; }
 }
