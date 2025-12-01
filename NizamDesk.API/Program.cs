@@ -11,6 +11,7 @@ builder.Services.AddDbContextFactory<AppDbContext>(options =>
 
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<CompanyService>();
+builder.Services.AddScoped<RoleService>();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
@@ -20,3 +21,5 @@ await UserEndpoints.Map(app).ConfigureAwait(false);
 await CompanyEndPoints.Map(app).ConfigureAwait(false);
 
 app.Run();
+
+public partial class Program { }

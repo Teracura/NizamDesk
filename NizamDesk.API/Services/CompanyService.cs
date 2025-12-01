@@ -2,6 +2,7 @@
 using NizamDesk.API.Data;
 using NizamDesk.API.EndpointEntities.Companies;
 using Teracura.TestingWebApp.Entities.DataScheme.Companies;
+using Teracura.TestingWebApp.Entities.Users;
 
 namespace NizamDesk.API.Services;
 

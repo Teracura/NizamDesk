@@ -4,7 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using NizamDesk.API.Data;
 using NizamDesk.API.Services;
 
-namespace Teracura.TestingWebApp.Tests;
+
+namespace NizamDesk.Tests;
 
 public class TestBase
 {
@@ -20,7 +21,7 @@ public class TestBase
             .Build();
 
         var connectionString = config.GetConnectionString("DefaultConnection")!;
-        
+
         services.AddDbContextFactory<AppDbContext>(options =>
             options.UseNpgsql(connectionString));
 

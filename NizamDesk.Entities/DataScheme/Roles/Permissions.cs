@@ -1,4 +1,4 @@
-﻿namespace Teracura.TestingWebApp.Entities.Roles;
+﻿namespace Teracura.TestingWebApp.Entities.DataScheme.Roles;
 
 [Flags]
 public enum Permissions

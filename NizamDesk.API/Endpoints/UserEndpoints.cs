@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics;
+using System.Globalization;
 using NizamDesk.API.EndpointEntities;
 using NizamDesk.API.Services;
 
@@ -13,11 +14,21 @@ public abstract class UserEndpoints : IEndpointMapper
         //</summary>
         app.MapPost("/api/users", async (UserService manager, UserCreateRequest userRequest) =>
         {
-            var createdUser = await manager.AddUserAsync(userRequest).ConfigureAwait(false);
+            try
+            {
+                var createdUser = await manager.AddUserAsync(userRequest).ConfigureAwait(false);
 
-            return createdUser is null
-                ? Results.BadRequest("Email already exists.")
-                : Results.Created($"/api/users/{createdUser.Id}", createdUser);
+                return createdUser is null
+                    ? Results.Conflict("Email already exists.")
+                    : Results.Created($"/api/users/{createdUser.Id}", createdUser);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine("err err err err err");
+                Debug.WriteLine(e);
+                return Results.BadRequest(e.Message);
+            }
+
         });
 
         //<summary>
