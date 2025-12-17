@@ -1,14 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NizamDesk.Logic", "NizamDesk.Logic\NizamDesk.Logic.csproj", "{F72E44BF-FE81-4088-B3FD-31F2018BFEA4}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NizamDesk.Tests", "NizamDesk.Tests\NizamDesk.Tests.csproj", "{354CFDE5-B06F-4095-860B-7D8513007271}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NizamDesk.Services", "NizamDesk.Services\NizamDesk.Services.csproj", "{DE1D482E-4383-4F7E-BA71-024243640825}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NizamDesk.Entities", "NizamDesk.Entities\NizamDesk.Entities.csproj", "{CDED31D0-BDC1-44F4-B333-4ABECB8AFF43}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NizamDesk.UI", "NizamDesk.UI\NizamDesk.UI.csproj", "{17D87F3C-7E05-4FBF-8E8B-C3B9F768061B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NizamDesk.API", "NizamDesk.API\NizamDesk.API.csproj", "{427C7249-8754-448B-BE66-727B9E0861DB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NizamDesk.Tests", "NizamDesk.Tests\NizamDesk.Tests.csproj", "{E05CCAA0-BDF5-4450-B0F0-6740D546154B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -16,25 +12,17 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F72E44BF-FE81-4088-B3FD-31F2018BFEA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F72E44BF-FE81-4088-B3FD-31F2018BFEA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F72E44BF-FE81-4088-B3FD-31F2018BFEA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F72E44BF-FE81-4088-B3FD-31F2018BFEA4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{354CFDE5-B06F-4095-860B-7D8513007271}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{354CFDE5-B06F-4095-860B-7D8513007271}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{354CFDE5-B06F-4095-860B-7D8513007271}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{354CFDE5-B06F-4095-860B-7D8513007271}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DE1D482E-4383-4F7E-BA71-024243640825}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DE1D482E-4383-4F7E-BA71-024243640825}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DE1D482E-4383-4F7E-BA71-024243640825}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DE1D482E-4383-4F7E-BA71-024243640825}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CDED31D0-BDC1-44F4-B333-4ABECB8AFF43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CDED31D0-BDC1-44F4-B333-4ABECB8AFF43}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CDED31D0-BDC1-44F4-B333-4ABECB8AFF43}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CDED31D0-BDC1-44F4-B333-4ABECB8AFF43}.Release|Any CPU.Build.0 = Release|Any CPU
-		{17D87F3C-7E05-4FBF-8E8B-C3B9F768061B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{17D87F3C-7E05-4FBF-8E8B-C3B9F768061B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{17D87F3C-7E05-4FBF-8E8B-C3B9F768061B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{17D87F3C-7E05-4FBF-8E8B-C3B9F768061B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{427C7249-8754-448B-BE66-727B9E0861DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{427C7249-8754-448B-BE66-727B9E0861DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{427C7249-8754-448B-BE66-727B9E0861DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{427C7249-8754-448B-BE66-727B9E0861DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E05CCAA0-BDF5-4450-B0F0-6740D546154B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E05CCAA0-BDF5-4450-B0F0-6740D546154B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E05CCAA0-BDF5-4450-B0F0-6740D546154B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E05CCAA0-BDF5-4450-B0F0-6740D546154B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

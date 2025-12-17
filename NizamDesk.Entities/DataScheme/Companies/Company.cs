@@ -1,8 +1,11 @@
-﻿namespace Teracura.TestingWebApp.Entities.Companies;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Teracura.TestingWebApp.Entities.DataScheme.Companies;
 
 public class Company
 {
-    public Guid Id { get; set; }
+    public required Guid Id { get; set; }
     public required string Name { get; set; }
-    public string? EntryPassword { get; set; }
+    public required byte[] EntryPassword { get; set; }
+    public required byte[] EntrySalt { get; set; }
 }

@@ -1,4 +1,4 @@
-﻿namespace Teracura.TestingWebApp.Entities.Projects;
+﻿namespace Teracura.TestingWebApp.Entities.DataScheme.Projects;
 
 public class Project
 {

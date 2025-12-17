@@ -1,10 +1,12 @@
-﻿namespace Teracura.TestingWebApp.Entities.Roles;
+﻿using Teracura.TestingWebApp.Entities.DataScheme.Roles;
+
+namespace Teracura.TestingWebApp.Entities.Roles;
 
 public class Role
 {
-    public Guid Id { get; set; }
+    public required Guid Id { get; set; }
     public required string Name { get; set; }
-    public Permissions Permissions { get; set; }
-    public Guid CompanyId { get; set; }
-    public int HierarchyLevel { get; set; } // Higher number = higher role
+    public required Permissions Permissions { get; set; }
+    public required Guid CompanyId { get; set; }
+    public required int HierarchyLevel { get; set; } // lower number = higher role
 }
